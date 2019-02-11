@@ -5,7 +5,7 @@ module Lib
 import Control.Monad
 import Brainfuck
 
-helloWorld :: Brainfuck
+helloWorld :: Brainfuck ()
 helloWorld = do
   replicateM_ 9 inc
   while $ do
