@@ -41,7 +41,7 @@ dec = Bf $ get >>= put . dec' where
 fwd = Bf $ get >>= put . right
 bwd = Bf $ get >>= put . left
 putB = Bf $ void $ get >>= lift . putB' where
-  putB' z = return z <* putChar (chr $ cur z)
+  putB' z = z <$ putChar (chr $ cur z)
 getB = Bf $ do
   (Zipper l _ r) <- get
   c <- lift getChar
@@ -49,7 +49,7 @@ getB = Bf $ do
 
 while :: Brainfuck () -> Brainfuck ()
 while = Bf . while' . unBf where
-  while' :: (StateT Memory IO ()) -> (StateT Memory IO ())
+  while' :: StateT Memory IO () -> StateT Memory IO ()
   while' bf = do
     m <- get
     when (cur m /= 0) $ do

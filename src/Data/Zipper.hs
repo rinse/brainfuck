@@ -14,7 +14,7 @@ data Zipper a = Zipper [a] a [a] deriving
 
 left, right :: Zipper a -> Zipper a
 left (Zipper ls c (r:rs)) = Zipper (c:ls) r rs
-right (Zipper (l:ls) c (rs)) = Zipper ls l (c:rs)
+right (Zipper (l:ls) c rs) = Zipper ls l (c:rs)
 
 toZipper :: a -> [a] -> Zipper a
 toZipper x xs = Zipper (repeat x) x (xs ++ repeat x)

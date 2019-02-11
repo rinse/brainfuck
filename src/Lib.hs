@@ -28,6 +28,5 @@ helloWorld = do
   fwd >> inc >> putB
 
 someFunc :: IO ()
-someFunc = do
-  void $ runBrainfuck helloWorld
+someFunc = void $ runBrainfuck helloWorld
 
