@@ -19,6 +19,10 @@ initialMemory :: Memory
 initialMemory = toZipper 0 []
 cur :: Memory -> Int
 cur = extractZipper
+modifyCur :: (a -> a) -> Zipper a -> Zipper a
+modifyCur f (Zipper l c r) = Zipper l (f c) r
+putCur :: a -> Zipper a -> Zipper a
+putCur a = modifyCur (const a)
 
 newtype Brainfuck a = Bf { unBf :: StateT Memory IO a }
 
@@ -34,18 +38,15 @@ instance Monad Brainfuck where
   (Bf s) >>= f = Bf $ s >>= unBf . f
 
 inc, dec, fwd, bwd, putB, getB :: Brainfuck ()
-inc = Bf $ modify' inc' where
-  inc' (Zipper l n r) = Zipper l (n+1) r
-dec = Bf $ modify' dec' where
-  dec' (Zipper l n r) = Zipper l (n-1) r
+inc = Bf $ modify' $ modifyCur (+1)
+dec = Bf $ modify' $ modifyCur (subtract 1)
 fwd = Bf $ modify' right
 bwd = Bf $ modify' left
 putB = Bf $ void $ get >>= lift . putB' where
   putB' z = z <$ putChar (chr $ cur z)
 getB = Bf $ do
-  (Zipper l _ r) <- get
   c <- lift getChar
-  put $ Zipper l (ord c) r
+  modify $ putCur (ord c)
 
 while :: Brainfuck () -> Brainfuck ()
 while = Bf . while' . unBf where
