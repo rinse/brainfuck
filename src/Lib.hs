@@ -27,6 +27,11 @@ helloWorld = do
   replicateM_ 8 dec >> putB
   fwd >> inc >> putB
 
+helloWorld' :: String
+helloWorld' = "+++++++++[>++++++++>+++++++++++>+++++<<<-]>.>++.+++++++..+++.>-.------------.<++++++++.--------.+++.------.--------.>+."
+
 someFunc :: IO ()
-someFunc = void $ runBrainfuck helloWorld
+someFunc = do
+  void $ runBrainfuck helloWorld
+  void $ runBrainfuck . readBrainfuck $ helloWorld'
 

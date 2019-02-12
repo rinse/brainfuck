@@ -8,6 +8,7 @@ module Brainfuck
     , getB
     , while
     , runBrainfuck
+    , readBrainfuck
     ) where
 
 import Control.Monad.State
@@ -59,4 +60,20 @@ while = Bf . while' . unBf where
 
 runBrainfuck :: Brainfuck a -> IO (a, Memory)
 runBrainfuck = flip runStateT initialMemory . unBf
+
+readBrainfuck :: String -> Brainfuck ()
+readBrainfuck = sequence_ . fst . rbf where
+  rbf :: String -> ([Brainfuck ()], String)
+  rbf [] = ([], [])
+  rbf ('+':s) = inc <++> rbf s
+  rbf ('-':s) = dec <++> rbf s
+  rbf ('>':s) = fwd <++> rbf s
+  rbf ('<':s) = bwd <++> rbf s
+  rbf ('.':s) = putB <++> rbf s
+  rbf (',':s) = getB <++> rbf s
+  rbf ('[':s) = let (bs, s') = rbf s
+                 in while (sequence_ bs) <++> rbf s'
+  rbf (']':s) = ([], s)
+  rbf (_:s) = rbf s
+  b <++> (bs, s) = (b:bs, s)
 
