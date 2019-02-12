@@ -34,12 +34,12 @@ instance Monad Brainfuck where
   (Bf s) >>= f = Bf $ s >>= unBf . f
 
 inc, dec, fwd, bwd, putB, getB :: Brainfuck ()
-inc = Bf $ get >>= put . inc' where
+inc = Bf $ modify' inc' where
   inc' (Zipper l n r) = Zipper l (n+1) r
-dec = Bf $ get >>= put . dec' where
+dec = Bf $ modify' dec' where
   dec' (Zipper l n r) = Zipper l (n-1) r
-fwd = Bf $ get >>= put . right
-bwd = Bf $ get >>= put . left
+fwd = Bf $ modify' right
+bwd = Bf $ modify' left
 putB = Bf $ void $ get >>= lift . putB' where
   putB' z = z <$ putChar (chr $ cur z)
 getB = Bf $ do
