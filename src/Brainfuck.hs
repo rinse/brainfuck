@@ -18,7 +18,7 @@ import Data.Zipper
 type Memory = Zipper Int
 initialMemory :: Memory
 initialMemory = toZipper 0 []
-cur :: Memory -> Int
+cur :: Zipper a -> a
 cur = extractZipper
 modifyCur :: (a -> a) -> Zipper a -> Zipper a
 modifyCur f (Zipper l c r) = Zipper l (f c) r
@@ -31,7 +31,7 @@ instance Functor Brainfuck where
   fmap f (Bf s) = Bf $ fmap f s
 
 instance Applicative Brainfuck where
-  pure = Bf . return
+  pure = Bf . pure
   (Bf f)  <*> (Bf s) = Bf $ f <*> s
 
 instance Monad Brainfuck where
@@ -45,9 +45,7 @@ fwd = Bf $ modify' right
 bwd = Bf $ modify' left
 putB = Bf $ void $ get >>= lift . putB' where
   putB' z = z <$ putChar (chr $ cur z)
-getB = Bf $ do
-  c <- lift getChar
-  modify $ putCur (ord c)
+getB = Bf $ lift getChar >>= modify . putCur . ord
 
 while :: Brainfuck () -> Brainfuck ()
 while = Bf . while' . unBf where
